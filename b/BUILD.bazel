@@ -1,0 +1,29 @@
+load("@aspect_bazel_lib//lib:copy_to_directory.bzl", "copy_to_directory")
+
+copy_to_directory(
+    name = "copy",
+    srcs = [
+        "//a:headers",
+    ],
+    replace_prefixes = {
+        "a": "",
+    },
+    out = "copy",
+    visibility = ["//visibility:public"],
+    verbose = 1,
+)
+
+cc_library(
+    name = "libb",
+    srcs = [
+        "file1.cxx",
+        "file1.hxx",
+        # This should be good to make header available to file1.cxx, but results in error.
+        ":copy"
+    ],
+    hdrs = [
+        # uncomment this to workaround the error (but causes unwanted visibility issue)
+        #":copy"
+    ],
+    includes = [".", "copy"],
+)
